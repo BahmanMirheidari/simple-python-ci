@@ -1,7 +1,7 @@
 
 import pytest
 
-from calculator import add, divide
+from calculator import add, divide, subtract
 
 
 def test_add():
@@ -15,3 +15,8 @@ def test_divide():
 def test_divide_by_zero():
     with pytest.raises(ValueError):
         divide(10, 0)
+        
+
+def test_subtract():
+    from calculator import subtract
+    assert subtract(8, 3) == 5
