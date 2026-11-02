@@ -12,3 +12,4 @@ numpy==1.26.4
 # RAG and HTTP
 requests
 pypdf
+mcp[cli]>=1.28,<2
