@@ -1,42 +1,45 @@
 # FastAPI Calculator and RAG Assistant
 
-A Python-based REST API demonstrating software engineering practices, automated testing, Continuous Integration and Continuous Deployment (CI/CD), and Retrieval-Augmented Generation (RAG).
+A Python REST API demonstrating backend development, automated testing, Git-based collaboration, CI/CD, and Retrieval-Augmented Generation (RAG).
 
-The project combines a basic calculator API with a document-based question-answering system powered by semantic search, FAISS, Sentence Transformers and Ollama.
+The project combines a calculator API with a document question-answering system. The RAG pipeline uses Ollama to generate embeddings and LLM responses, with NumPy-based vector similarity search.
 
-## 1. Project Features
+**Project repository:** https://github.com/BahmanMirheidari/simple-python-ci
+
+**API documentation:** Open `/docs` on the deployed or locally running application.
+
+## 1. Features
 
 ### Calculator API
-- Addition and subtraction operations.
-- REST API implementation using FastAPI.
-- Unit tests using pytest.
-- API integration tests using HTTPX.
+- Addition, subtraction and division.
+- REST API implemented using FastAPI.
+- Input validation and error handling.
+- Automated unit and API tests.
 
 ### RAG Assistant
-- Document ingestion and text extraction.
-- Text chunking with configurable overlap.
-- Semantic embeddings using Sentence Transformers.
-- Vector similarity search using FAISS.
-- LLM-based answer generation using Ollama.
+- Document ingestion and text chunking.
+- Text embeddings generated using Ollama.
+- NumPy-based cosine similarity retrieval.
+- LLM-based answer generation using Qwen.
 - Source attribution for retrieved documents.
-- Automated testing using mocked embedding models and LLM responses.
+- Automated tests using mocked models and HTTP responses.
 
 ### Software Engineering
-- Modular Python application architecture.
-- Unit and integration testing.
-- Git version control and feature branches.
-- Automated CI using GitHub Actions.
-- Automated deployment following successful tests (CD).
-- Optional Docker containerisation.
+- Modular Python architecture.
+- Unit and integration testing with pytest.
+- Git branching and pull-request workflow.
+- Continuous Integration using GitHub Actions.
+- Deployment using Render.
+- API documentation through FastAPI Swagger UI.
 
-## 2. Architecture
+## 2. Project Architecture
 
 ```text
-fastapi-project/
+simple-python-ci/
 │
+├── main.py
 ├── calculator.py
 ├── test_calculator.py
-├── main.py
 ├── test_api.py
 │
 ├── rag/
@@ -46,14 +49,14 @@ fastapi-project/
 │   ├── retriever.py
 │   └── generator.py
 │
-├── documents/
-│   └── sample.txt
-│
 ├── tests/
 │   ├── test_ingestion.py
 │   ├── test_embeddings.py
 │   ├── test_retriever.py
 │   └── test_generator.py
+│
+├── documents/
+│   └── sample.txt
 │
 ├── requirements.txt
 ├── .github/
@@ -63,68 +66,76 @@ fastapi-project/
 └── README.md
 ```
 
+### Main components
+
+| File | Responsibility |
+|---|---|
+| `main.py` | FastAPI application and API endpoints |
+| `calculator.py` | Calculator operations |
+| `test_calculator.py` | Calculator unit tests |
+| `test_api.py` | API integration tests |
+| `rag/ingestion.py` | Document loading and text chunking |
+| `rag/embeddings.py` | Embedding generation through Ollama |
+| `rag/retriever.py` | Vector normalisation and similarity search |
+| `rag/generator.py` | Prompt construction and LLM answer generation |
+| `tests/` | Automated RAG component tests |
+| `requirements.txt` | Python dependencies |
+| `.github/workflows/` | GitHub Actions CI configuration |
+
 ## 3. Technology Stack
 
 | Component | Technology |
 |---|---|
-| Programming language | Python |
-| Backend API | FastAPI |
+| Language | Python 3.12 |
+| API framework | FastAPI |
 | API server | Uvicorn |
+| Data validation | Pydantic |
 | Testing | Pytest, HTTPX |
-| Embeddings | Sentence Transformers |
-| Embedding model | all-MiniLM-L6-v2 |
-| Vector database | FAISS |
-| LLM | Ollama / Qwen |
-| Version control | Git / GitHub |
-| CI/CD | GitHub Actions |
+| Numerical computing | NumPy |
+| Embedding service | Ollama |
+| Embedding model | `nomic-embed-text` |
+| LLM | `qwen3:8b` |
+| Version control | Git and GitHub |
+| CI | GitHub Actions |
+| Deployment | Render |
 
 ## 4. Local Installation
 
 ### Step 1: Clone the repository
 
 ```bash
-git clone https://github.com/YOUR_USERNAME/YOUR_REPOSITORY.git
+git clone https://github.com/BahmanMirheidari/simple-python-ci.git
 
-cd YOUR_REPOSITORY
+cd simple-python-ci
 ```
 
 ### Step 2: Create a virtual environment
 
 ```bash
-python -m venv venv
-```
+python3.12 -m venv .venv
 
-Activate it:
-
-Linux / macOS:
-
-```bash
-source venv/bin/activate
-```
-
-Windows:
-
-```bash
-venv\Scripts\activate
+source .venv/bin/activate
 ```
 
 ### Step 3: Install dependencies
 
 ```bash
-pip install --upgrade pip
+python -m pip install --upgrade pip
 
 pip install -r requirements.txt
 ```
 
-### Step 4: Install and configure Ollama
+### Step 4: Install Ollama
 
-Install Ollama from:
+Download Ollama from:
 
 https://ollama.com/
 
-Download the selected model:
+Download the embedding and language models:
 
 ```bash
+ollama pull nomic-embed-text
+
 ollama pull qwen3:8b
 ```
 
@@ -134,20 +145,30 @@ Start Ollama:
 ollama serve
 ```
 
-The default API endpoint is:
+The default Ollama API endpoint is:
 
 ```text
 http://localhost:11434
 ```
 
-Ensure the model name in `rag/generator.py` matches the installed model.
+The application uses:
+- `nomic-embed-text` for document and query embeddings.
+- `qwen3:8b` for generating answers from retrieved context.
 
-## 5. Running the Application
+Make sure the model names in `rag/embeddings.py` and `rag/generator.py` match the installed models.
 
-Start the FastAPI server:
+## 5. Running the API Locally
+
+Start the FastAPI application:
 
 ```bash
 uvicorn main:app --reload
+```
+
+The API is available at:
+
+```text
+http://127.0.0.1:8000
 ```
 
 Open the interactive API documentation:
@@ -156,152 +177,147 @@ Open the interactive API documentation:
 http://127.0.0.1:8000/docs
 ```
 
-Use Swagger UI to test the calculator and RAG endpoints.
+Swagger UI allows you to inspect endpoints, submit requests and view JSON responses directly in the browser.
 
-## 6. Running Tests
+### Available endpoints
+
+| Method | Endpoint | Description |
+|---|---|---|
+| GET | `/` | API welcome message |
+| GET | `/health` | Health check |
+| GET | `/add` | Add two numbers |
+| GET | `/subtract` | Subtract two numbers |
+| GET | `/divide` | Divide two numbers |
+| POST | `/ingest` | Ingest documents and build the retrieval index |
+| POST | `/query` | Retrieve relevant content and generate an answer |
+
+### Testing the calculator
+
+Example:
+
+```text
+GET /add?a=10&b=5
+```
+
+Expected response:
+
+```json
+{
+  "a": 10,
+  "b": 5,
+  "result": 15
+}
+```
+
+### Testing document ingestion
+
+First, open `/docs` and select `POST /ingest`.
+
+Example JSON request:
+
+```json
+{
+  "documents": [
+    {
+      "text": "Dementia can affect memory, language, thinking and everyday activities.",
+      "source": "dementia_guide.txt"
+    },
+    {
+      "text": "Regular physical activity and social engagement may support general brain health.",
+      "source": "brain_health.txt"
+    }
+  ]
+}
+```
+
+The endpoint creates chunks, generates embeddings and builds the retrieval index.
+
+A successful response should include the number of documents and chunks processed.
+
+### Testing RAG question answering
+
+After successfully ingesting documents, select `POST /query`.
+
+Example JSON request:
+
+```json
+{
+  "question": "What are some effects of dementia?",
+  "top_k": 3
+}
+```
+
+The application performs the following steps:
+
+1. Converts the question into an embedding using Ollama.
+2. Compares the question embedding with stored document embeddings.
+3. Retrieves the most similar text chunks.
+4. Constructs a prompt containing the retrieved context.
+5. Sends the prompt to Qwen through Ollama.
+6. Returns the generated answer and source documents.
+
+The response contains:
+- `answer`: generated response.
+- `sources`: source documents used.
+- `retrieved_chunks`: retrieved text and similarity scores.
+
+Try changing the question and `top_k` value to observe how retrieval affects the response.
+
+**Important:** The current retrieval index is stored in application memory. Ingest documents again after restarting the application.
+
+## 6. Running Automated Tests
 
 Run all tests:
 
 ```bash
-pytest -v
-```
-
-Run tests with coverage:
-
-```bash
-pip install pytest-cov
-
-pytest --cov=. --cov-report=term-missing
+python -m pytest -v
 ```
 
 Run individual test modules:
 
 ```bash
-pytest -v test_calculator.py
+python -m pytest -v test_calculator.py
 
-pytest -v test_api.py
+python -m pytest -v test_api.py
 
-pytest -v tests/test_ingestion.py
+python -m pytest -v tests/test_ingestion.py
 
-pytest -v tests/test_retriever.py
+python -m pytest -v tests/test_embeddings.py
 
-pytest -v tests/test_generator.py
+python -m pytest -v tests/test_retriever.py
+
+python -m pytest -v tests/test_generator.py
 ```
 
-RAG unit tests should use mocked embedding models and HTTP responses wherever possible. This avoids downloading large models or requiring a running Ollama server during CI.
+The automated tests should use mock embedding models and mocked HTTP responses. This means GitHub Actions does not need a running Ollama server or downloaded LLM models to execute the unit tests.
 
-Real-model integration tests can be run separately.
+Real-model integration testing can be performed locally with Ollama.
 
-## 7. Continuous Integration with GitHub Actions
+## 7. Git and GitHub Development Workflow
 
-The project uses GitHub Actions to automatically run tests whenever changes are pushed to GitHub or a pull request is created.
+The project uses feature branches to separate development work from the main branch.
 
-### Step 1: Create the workflow
-
-Create:
-
-```text
-.github/workflows/ci.yml
-```
-
-Example workflow:
-
-```yaml
-name: Python CI
-
-on:
-  push:
-    branches: [main, develop]
-  pull_request:
-    branches: [main]
-
-jobs:
-  test:
-    runs-on: ubuntu-latest
-
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
-
-      - name: Set up Python
-        uses: actions/setup-python@v5
-        with:
-          python-version: "3.12"
-
-      - name: Install dependencies
-        run: |
-          python -m pip install --upgrade pip
-          pip install -r requirements.txt
-          pip install pytest
-
-      - name: Run tests
-        run: pytest -v
-```
-
-The workflow performs the following tasks:
-
-1. Checks out the latest repository code.
-2. Sets up Python.
-3. Installs project dependencies.
-4. Runs the automated test suite.
-5. Reports success or failure in GitHub Actions.
-
-Note: Pin action versions and dependencies appropriately when preparing a production deployment.
-
-### Step 2: Push changes to GitHub
-
-Check the current Git status:
+### Step 1: Check the current branch
 
 ```bash
+git branch
 git status
 ```
 
-Add and commit changes:
+### Step 2: Create a feature branch
+
+For example:
 
 ```bash
-git add .
-
-git commit -m "Add RAG functionality and automated tests"
+git checkout -b feature/rag-improvements
 ```
 
-Push changes:
+### Step 3: Implement and test changes
+
+Make changes to the source code and run:
 
 ```bash
-git push origin main
-```
-
-### Step 3: Check GitHub Actions
-
-1. Open your GitHub repository.
-2. Select the Actions tab.
-3. Open the Python CI workflow.
-4. Inspect the test job.
-5. Check whether all tests passed.
-
-A successful workflow indicates that the automated tests have passed.
-
-A failed workflow provides logs to help identify the problem.
-
-## 8. Recommended Git Development Workflow
-
-For new features, use feature branches rather than committing directly to the main branch.
-
-Example: adding RAG functionality.
-
-### Step 1: Create a feature branch
-
-```bash
-git checkout -b feature/rag-assistant
-```
-
-### Step 2: Implement the feature
-
-Add the RAG modules and their tests.
-
-### Step 3: Run local tests
-
-```bash
-pytest -v
+python -m pytest -v
 ```
 
 ### Step 4: Commit changes
@@ -309,13 +325,19 @@ pytest -v
 ```bash
 git add .
 
-git commit -m "Implement RAG document retrieval"
+git commit -m "Improve RAG embedding implementation"
 ```
 
 ### Step 5: Push the feature branch
 
 ```bash
-git push -u origin feature/rag-assistant
+git push -u origin feature/rag-improvements
+```
+
+For subsequent changes to the same branch:
+
+```bash
+git push
 ```
 
 ### Step 6: Create a Pull Request
@@ -323,116 +345,210 @@ git push -u origin feature/rag-assistant
 On GitHub:
 
 1. Open the repository.
-2. Select Compare & pull request.
-3. Set the target branch to `main`.
-4. Review the changes.
-5. Submit the pull request.
+2. Select **Pull requests**.
+3. Select **New pull request**, or use **Compare & pull request** after pushing a branch.
+4. Select the feature branch as the source.
+5. Select `main` as the target branch.
+6. Review the changes and create the pull request.
 
-GitHub Actions automatically runs the CI workflow against the pull request.
+### Step 7: Review automated checks
 
-### Step 7: Merge
+GitHub Actions automatically runs the CI workflow when a pull request is created or updated.
 
-Merge the pull request only after the tests pass and the changes have been reviewed.
+Open the pull request and inspect the checks:
 
-## 9. Continuous Deployment (CD)
+- `Python tests / test (pull_request)`
+- `Python tests / test (push)`
 
-Continuous Deployment extends CI by automatically deploying the application after successful testing.
+If a check fails:
 
-One possible approach is deploying the FastAPI application using Render.
+1. Open the failed check.
+2. Select the test job.
+3. Inspect the error logs.
+4. Fix the issue locally.
+5. Run pytest again.
+6. Commit and push the fix to the same feature branch.
+
+The pull request will update automatically.
+
+### Step 8: Merge the pull request
+
+Once the changes have been reviewed and required checks pass, merge the pull request into `main`.
+
+Update the local main branch afterwards:
+
+```bash
+git checkout main
+
+git pull origin main
+```
+
+## 8. Continuous Integration with GitHub Actions
+
+The project uses GitHub Actions to automate testing.
+
+The CI workflow performs the following tasks:
+
+1. Checks out the repository.
+2. Sets up Python 3.12.
+3. Installs dependencies.
+4. Runs pytest.
+5. Reports whether the tests pass or fail.
+
+The workflow is triggered by pushes and pull requests according to the configured branches in `.github/workflows/ci.yml`.
+
+This helps identify errors before changes are merged into the main branch.
+
+## 9. Deployment using Render
+
+The FastAPI application can be deployed using Render.
 
 Website:
 
 https://render.com/
 
-Typical deployment configuration:
+### Step 1: Create a Render account
+
+Sign in using your GitHub account and authorise access to the repository.
+
+### Step 2: Create a Web Service
+
+1. Open the Render dashboard.
+2. Select **New**.
+3. Select **Web Service**.
+4. Connect the `simple-python-ci` GitHub repository.
+5. Select the deployment branch.
+
+For normal production deployment, use `main` after merging the feature branch.
+
+### Step 3: Configure the service
 
 | Setting | Value |
 |---|---|
 | Runtime | Python |
 | Build command | `pip install -r requirements.txt` |
 | Start command | `uvicorn main:app --host 0.0.0.0 --port $PORT` |
-| Deployment branch | main |
+| Health check path | `/health` |
 
-Configure automatic deployments from the main branch.
+Create the service and wait for the deployment to complete.
 
-Important: Ollama is not automatically available on a standard Render deployment. The RAG application needs access to a separately hosted LLM service, or a suitable hosted inference API. The in-memory FAISS index also needs rebuilding or persistent storage.
+### Step 4: Test the deployed application
 
-For this project, the first deployment can focus on the calculator API. RAG deployment can follow once model hosting and vector-index persistence are configured.
-
-## 10. CI/CD Pipeline
-
-The overall development and deployment process is:
+Render provides a public URL, for example:
 
 ```text
-Developer
-    |
-    v
+https://YOUR-RENDER-SERVICE.onrender.com
+```
+
+Open the API documentation:
+
+```text
+https://YOUR-RENDER-SERVICE.onrender.com/docs
+```
+
+Test the health endpoint:
+
+```text
+https://YOUR-RENDER-SERVICE.onrender.com/health
+```
+
+You can also test the calculator endpoints through Swagger UI.
+
+### Important: RAG model hosting
+
+The current RAG implementation uses Ollama at:
+
+```text
+http://localhost:11434
+```
+
+This works when the application and Ollama are running on the same local machine.
+
+A Render service cannot automatically access Ollama running on your Mac. Therefore, the RAG `/ingest` and `/query` endpoints require a separately hosted, reachable embedding and LLM service before they can work on Render.
+
+The application also stores its retrieval index in memory, so persistent storage or re-ingestion is needed when the service restarts.
+
+Until remote model access is configured, treat the Render deployment as a deployment of the API and calculator functionality, not a fully operational hosted RAG service.
+
+## 10. CI/CD Development Pipeline
+
+The intended workflow is:
+
+```text
 Local development
-    |
-    v
-Run pytest
-    |
-    v
-Git commit
-    |
-    v
-Push feature branch
-    |
-    v
+       |
+       v
+Run automated tests
+       |
+       v
+Create feature branch
+       |
+       v
+Commit changes
+       |
+       v
+Push to GitHub
+       |
+       v
 Create Pull Request
-    |
-    v
+       |
+       v
 GitHub Actions CI
-    |
-    v
-Automated tests
-    |
-    +---- Failure --> Fix and push changes
-    |
-    v
-Tests successful
-    |
-    v
+       |
+       v
+Run automated tests
+       |
+       +------ Failure
+       |          |
+       |          v
+       |      Fix and push
+       |          |
+       |          +----> Run checks again
+       |
+       v
+All required checks pass
+       |
+       v
 Merge into main
-    |
-    v
-Automatic deployment
-    |
-    v
-Production API
+       |
+       v
+Render deployment
+       |
+       v
+Test deployed API
 ```
 
 ## 11. Future Improvements
 
-Potential extensions include:
-
-- Persistent FAISS indexes.
-- PDF and DOCX document ingestion.
-- Hybrid search combining keyword and semantic retrieval.
+- Persistent vector storage.
+- PDF and DOCX ingestion.
+- Hybrid keyword and semantic retrieval.
 - Retrieval evaluation using Precision@K and Recall@K.
-- RAG answer evaluation and groundedness checks.
-- Docker-based deployment.
+- RAG answer quality and groundedness evaluation.
+- Docker containerisation.
 - LangChain integration.
 - Authentication and API security.
 - Structured logging and monitoring.
-- LLM-based agentic workflows.
+- Remote LLM and embedding service configuration.
+- Agentic AI workflows.
 
-## 12. Learning Objectives
+## 12. Learning Outcomes
 
-This project demonstrates practical experience with:
+This project provides practical experience with:
 
-- REST API development using Python and FastAPI.
-- Modular software architecture.
-- Unit and integration testing.
-- Git branching and pull-request workflows.
-- CI/CD automation.
-- Semantic search and vector databases.
+- Python backend development.
+- REST API design using FastAPI.
+- Document processing and chunking.
+- Embedding generation and semantic search.
 - Retrieval-Augmented Generation.
 - Local LLM integration.
-- Automated software quality checks.
+- Unit and API integration testing.
+- Git branching and pull-request workflows.
+- Continuous Integration using GitHub Actions.
+- Cloud application deployment using Render.
 
 ---
 
-**Project status:** Experimental / Learning Project
+**Project status:** Experimental learning and portfolio project.
 
-**License:** MIT (if an MIT licence is added to the repository).
+**License:** Add an MIT licence file if distributing the project under the MIT licence.
