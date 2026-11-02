@@ -1,5 +1,14 @@
-
+# API
 fastapi
-uvicorn
+uvicorn[standard]
+
+# Testing
 pytest
-httpx2
+httpx
+
+# Numerical computing
+numpy==1.26.4
+
+# RAG and HTTP
+requests
+pypdf
